@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('judul');
             $table->text('isi_laporan');
             $table->string('foto');
-            $table->enum('status', ['blm_proses', 'proses', 'selesai'])->default('blm_proses');
+            $table->enum('status', ['Belum Di Proses', 'Sedang Di Proses', 'Selesai'])->default('Belum Di Proses');
             $table->timestamps();
         });
     }

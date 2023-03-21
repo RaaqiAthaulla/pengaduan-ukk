@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Masyarakat;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,8 @@ class MasyarakatController extends Controller
      */
     public function index()
     {
-        return view('page.admin.masyarakat');
+        $user = User::roleUser()->get();
+        return view('page.admin.masyarakat', compact('user'));
     }
 
     /**

@@ -25,9 +25,28 @@ class User extends Authenticatable
         'password',
     ];
 
+    // public function isAdmin()
+    // {
+    //     return $this->role === 'Admin';
+    // }
+
+    // public function isUser()
+    // {
+    //     return $this->role === 'User';
+    // }
+
     public function pengaduan()
     {
-        return $this->hasMany(Pengaduan::class);
+        return $this->hasMany(Pengaduan::class, 'id', 'id_user');
+    }
+
+    public function masyarakat()
+    {
+        return $this->hasMany(Masyarakat::class);
+    }
+    public function tanggapan()
+    {
+        return $this->belongsTo(tanggapan::class, 'id', 'id_petugas');
     }
 
     /**
@@ -48,4 +67,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function scopeRoleUser($query)
+    {
+        return $query->where('role', 'User');
+    }
+
+    public function scopeRolePetugas($query)
+    {
+        return $query->where('role', 'petugas');
+    }
 }

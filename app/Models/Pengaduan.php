@@ -28,4 +28,9 @@ class Pengaduan extends Model
     {
         return $this->belongsTo(User::class, 'id_user', 'id');
     }
+
+    public function tanggapan()
+    {
+        return $this->hasOne(Tanggapan::class, 'id_pengaduan', 'id');
+    }
 }

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('nik');
             $table->string('tlp');
             $table->string('image')->nullable();
-            $table->enum('role', ['Petugas', 'Admin', 'User'])->default('user');
+            $table->enum('role', ['Petugas', 'Admin', 'User'])->default('User');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

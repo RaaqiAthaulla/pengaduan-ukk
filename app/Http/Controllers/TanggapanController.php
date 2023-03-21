@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Petugas;
 use App\Models\Pengaduan;
 use App\Models\tanggapan;
-use App\Models\Petugas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Console\View\Components\Alert;
+
 
 class TanggapanController extends Controller
 {
@@ -27,9 +31,6 @@ class TanggapanController extends Controller
      */
     public function create(Pengaduan $pengaduan)
     {
-        $pengaduan = Pengaduan::where('status', '!=', 'selesai')->get();
-        $petugas = Petugas::all();
-        return view('tanggapan.create', compact('pengaduan', 'petugas'));
     }
 
     /**
@@ -40,25 +41,24 @@ class TanggapanController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'pengaduan_id' => 'required',
-            'petugas_id' => 'required',
-            'tanggapan' => 'required'
+        // dd($request);
+        // dd(\App\Models\user::first()->pengaduan);
+        DB::table('pengaduan')->where('id', $request->id_pengaduan)->update([
+            'status' => 'selesai',
         ]);
 
-        $tanggapan = Tanggapan::create([
-            'pengaduan_id' => $request->pengaduan_id,
-            'petugas_id' => $request->petugas_id,
-            'tanggapan' => $request->tanggapan
-        ]);
 
-        $pengaduan = Pengaduan::findOrFail($request->pengaduan_id);
-        $pengaduan->update([
-            'status' => 'selesai'
-        ]);
+        $item = $request->all();
 
-        return redirect()->route('tanggapan.index')
-            ->with('success', 'Tanggapan berhasil dibuat.');
+        $item['id_pengaduan'] = $request->id_pengaduan;
+        $item['id_petugas'] = auth()->user()->id;
+        $item['tanggapan'] = $request->isi_tanggapan;
+        $item['tgl_tanggapan'] = date('y-m-d');
+        // $item['petugas_id'] = $petugas_id;
+
+
+        Tanggapan::create($item);
+        return redirect('pengaduan');
     }
 
     /**
@@ -67,10 +67,13 @@ class TanggapanController extends Controller
      * @param  \App\Models\tanggapan  $tanggapan
      * @return \Illuminate\Http\Response
      */
-    public function show(tanggapan $tanggapan, $id)
+    public function show($id)
     {
-        $tanggapan = Tanggapan::findOrFail($id);
-        return view('tanggapan.show', compact('tanggapan'));
+        $item = Pengaduan::findOrFail($id);
+
+        return view('page.admin.tanggapan.add', [
+            'item' => $item
+        ]);
     }
 
     /**
@@ -79,46 +82,7 @@ class TanggapanController extends Controller
      * @param  \App\Models\tanggapan  $tanggapan
      * @return \Illuminate\Http\Response
      */
-    public function edit(tanggapan $tanggapan, $id)
-    {
-        $tanggapan = Tanggapan::findOrFail($id);
-        $pengaduan = Pengaduan::where('status', '!=', 'selesai')->get();
-        $petugas = Petugas::all();
-        return view('tanggapan.edit', compact('tanggapan', 'pengaduan', 'petugas'));
-    }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\tanggapan  $tanggapan
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, tanggapan $tanggapan, $id)
-    {
-        $request->validate([
-            'pengaduan_id' => 'required',
-            'petugas_id' => 'required',
-            'tanggapan' => 'required'
-        ]);
-
-        $tanggapan = Tanggapan::findOrFail($id);
-        $tanggapan->update([
-            'pengaduan_id' => $request->pengaduan_id,
-            'petugas_id' => $request->petugas_id,
-            'tanggapan' => $request->tanggapan
-        ]);
-
-        return redirect()->route('tanggapan.index')
-            ->with('success', 'Tanggapan berhasil diupdate.');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\tanggapan  $tanggapan
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(tanggapan $tanggapan, $id)
     {
         $tanggapan = Tanggapan::findOrFail($id);

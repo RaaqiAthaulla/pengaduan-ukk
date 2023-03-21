@@ -18,7 +18,7 @@
                                         </th>
                                         <th>
                                             <span class="text-dark font-weight-bold ms-sm-2">
-                                                :{{ $pengaduan->user->nik }}
+                                                : {{ $pengaduan->user->nik }}
                                             </span>
                                         </th>
                                     </tr>
@@ -28,7 +28,7 @@
                                         </th>
                                         <th>
                                             <span class="text-dark ms-sm-2 font-weight-bold">
-                                                :{{ $pengaduan->judul }}
+                                                : {{ $pengaduan->judul }}
                                             </span>
                                         </th>
                                     </tr>
@@ -38,7 +38,7 @@
                                         </th>
                                         <th>
                                             <span class="text-dark ms-sm-2 font-weight-bold">
-                                                :{{ $pengaduan->status }}
+                                                : {{ $pengaduan->status }}
                                             </span>
                                         </th>
                                     </tr>
@@ -48,19 +48,19 @@
                                         </th>
                                         <th>
                                             <span class="text-dark ms-sm-2 font-weight-bold">
-                                                :{{ $pengaduan->created_at }}
+                                                : {{ $pengaduan->created_at }}
                                             </span>
                                         </th>
                                     </tr>
 
                                 </table>
                             </div>
-                            <div class="ms-auto text-end">
+                            {{-- <div class="ms-auto text-end">
                                 <a class="btn btn-link text-danger text-gradient px-3 mb-0" href="javascript:;"><i
                                         class="far fa-trash-alt me-2"></i>Delete</a>
                                 <a class="btn btn-link text-dark px-3 mb-0" href="javascript:;"><i
                                         class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>Edit</a>
-                            </div>
+                            </div> --}}
                         </li>
                     </ul>
                 </div>
@@ -73,21 +73,27 @@
                 <div class="card-header pb-0 px-3">
                     <h6 class="mb-0">Detail Laporan</h6>
                     <div class="row">
-                        <div class="col-lg-6">
-                            <div class="card-body pt-4 p-3">
-                                <img width="50%" height="50%" src="{{ asset('foto-pengaduan/' . $pengaduan->foto) }}"
+                        <div class="col-lg-6 h-100">
+                            <div class="card-body t-4 p-3">
+                                <img width="100%" height="100%" src="{{ asset('foto-pengaduan/' . $pengaduan->foto) }}"
                                     alt="user1">
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="flex-column">
-                                <div class="card-header pb-0 px-3">
-                                    <span class="text-xs">Isi Laporan</span>
-                                    <span class="text-dark ms-sm-2 font-weight-bold">{{ $pengaduan->isi_laporan }}</span>
+                                <div class=" row card-header pb-0 px-3">
+                                    <h6 class="mb-3 text-sm">Deskripsi Laporan</h6>
+                                    <span class="text-dark ms-sm-2 font-weight-bold">
+                                        {{ $pengaduan->isi_laporan }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <a href="{{ route('tanggapan.show', $pengaduan->id) }}"
+                        class="btn btn-primary d-flex align-items-center justify-content-center mt-5">
+                        Tanggapi
+                    </a>
                 </div>
             </div>
         </div>

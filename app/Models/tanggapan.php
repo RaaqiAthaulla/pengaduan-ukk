@@ -19,4 +19,14 @@ class tanggapan extends Model
         'tanggapan',
         'id_petugas',
     ];
+
+    public function pengaduan()
+    {
+        return $this->belongsTo(Pengaduan::class);
+    }
+
+    public function petugas()
+    {
+        return $this->hasOne(user::class, 'id', 'id_petugas');
+    }
 }

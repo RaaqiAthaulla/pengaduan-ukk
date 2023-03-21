@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Petugas;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,8 @@ class PetugasController extends Controller
     {
         // $petugas = Petugas::all();
         // return view('page.admin.petugas.index', compact('petugas'));
-        return view('page.admin.petugas.index');
+        $user = User::RolePetugas()->get();
+        return view('page.admin.petugas.index', compact('user'));
     }
 
     /**

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use view;
 use App\Models\User;
 use App\Models\Pengaduan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Dompdf\Dompdf;
+use Illuminate\Support\Facades\View;
 
 class PengaduanController extends Controller
 {
@@ -18,20 +19,38 @@ class PengaduanController extends Controller
     public function index()
     {
 
-        $pengaduan = Pengaduan::all();
+        // $pengaduan = Pengaduan::all();
         $user = User::all();
+
+        $pengaduan = Pengaduan::orderBy('id', 'desc')->paginate(10);
+
         return view('page.admin.pengaduan.index', compact('pengaduan', 'user'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function indexmasyarakat()
+    {
+        $id_user = Auth::id();
+        $user = User::find($id_user);
+
+        $pengaduan = Pengaduan::where('id_user', $id_user)->orderBy('id', 'desc')->paginate(10);
+        // dd($pengaduan);
+        return view('page.masyarakat.pengaduan.index', compact('pengaduan', 'user'));
+    }
+
+
+    public function dashboard()
+    {
+        $jmlhPengaduan = Pengaduan::count();
+        return view('page.admin.dashboard', compact('jmlhPengaduan'));
+    }
+
     public function create()
     {
         $id_user = Auth::id(); // mengambil ID user yang sedang login dari session
-        return view('page.admin.pengaduan.create', ['id_user' => $id_user]);
+        return view('page.masyarakat.pengaduan.add', ['id_user' => $id_user]);
+
+        // $id_user = Auth::id(); // mengambil ID user yang sedang login dari session
+        // return view('page.masyarakat.pengaduan.add', compact('id_user'));
     }
 
 
@@ -46,10 +65,10 @@ class PengaduanController extends Controller
         $request->validate([
             'judul' => 'required',
             'isi_laporan' => 'required',
-            'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
+            'foto' => 'required|image|mimes:jpeg,png,jpg',
         ]);
-
         $input = $request->all();
+        $input['id_user'] = auth()->user()->id;
 
         if ($image = $request->file('foto')) {
             $destinationPath = 'foto-pengaduan/';
@@ -58,9 +77,10 @@ class PengaduanController extends Controller
             $input['foto'] = "$profileImage";
         }
 
-        Pengaduan::create($input);
-        // dd($input);
-        return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil disimpan.');
+        $pengaduan = Pengaduan::create($input);
+        // if (auth()->user()->role == 'Admin') {
+        //     return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil disimpan.');
+        return redirect()->route('pengaduanmasyarakat')->with('success', 'Pengaduan berhasil disimpan.');
     }
 
     /**
@@ -72,6 +92,14 @@ class PengaduanController extends Controller
     public function show(Pengaduan $pengaduan)
     {
         return view('page.admin.pengaduan.show', compact('pengaduan'));
+    }
+
+    public function showmasyarakat(Pengaduan $pengaduan)
+    {
+
+        // $pengaduan = ::where('id_pengaduan', $id)->first();
+        // dd($pengaduan);
+        return view('page.masyarakat.pengaduan.show', compact('pengaduan'));
     }
 
     /**
@@ -138,5 +166,14 @@ class PengaduanController extends Controller
 
         return redirect()->route('pengaduan.index')
             ->with('success', 'Pengaduan berhasil dihapus.');
+    }
+
+    public function ubahStatus(Request $request, Pengaduan $pengaduan)
+    {
+        $data = ['status' => 'Sedang Di Proses'];
+
+        $pengaduan->update($data);
+
+        return redirect()->back();
     }
 }
