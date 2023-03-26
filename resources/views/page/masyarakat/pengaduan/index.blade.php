@@ -20,39 +20,6 @@
                     <div class="card-header pb-0 d-flex justify-content-between align-items-center">
                         <h6 class="mb-0">Data Pengaduan</h6>
                         <div class="d-flex justify-content-center ">
-                            {{-- <ul class="nav nav-tabs" id="myTab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
-                                    data-bs-target="#home-tab-pane" type="button" role="tab"
-                                    aria-controls="home-tab-pane" aria-selected="true">Home</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
-                                    data-bs-target="#profile-tab-pane" type="button" role="tab"
-                                    aria-controls="profile-tab-pane" aria-selected="false">Profile</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="contact-tab" data-bs-toggle="tab"
-                                    data-bs-target="#contact-tab-pane" type="button" role="tab"
-                                    aria-controls="contact-tab-pane" aria-selected="false">Contact</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
-                                    data-bs-target="#disabled-tab-pane" type="button" role="tab"
-                                    aria-controls="disabled-tab-pane" aria-selected="false" disabled>Disabled</button>
-                            </li>
-                        </ul> --}}
-                            {{-- <ul class="nav nav-tabs card-header-tabs d-flex">
-                                <li class="nav-item">
-                                    <a class="nav-link">Belum diproses</a>
-                                </li>
-                                <li class="nav-item ">
-                                    <h6> <a class="nav-link ">Diproses</a></h6>
-                                </li>
-                                <li class="nav-item ">
-                                    <a class="nav-link">Selesai</a>
-                                </li>
-                            </ul> --}}
                         </div>
                     </div>
 
@@ -98,62 +65,86 @@
                                             </td>
                                             @if ($item->status == 'Belum di Proses')
                                                 <td class="lign-middle text-center text-sm">
-                                                    <span class="badge badge-sm bg-gradient-warning">
+                                                    <span class="badge badge-sm bg-danger">
                                                         {{ $item->status }}
                                                     </span>
                                                 </td>
                                             @elseif ($item->status == 'Sedang di Proses')
                                                 <td class="lign-middle text-center text-sm">
-                                                    <span class="badge badge-sm bg-gradient-success">
+                                                    <span class="badge badge-sm bg-warning">
                                                         {{ $item->status }}
                                                     </span>
                                                 </td>
                                             @else
                                                 <td class="text-center">
-                                                    <span class="badge bg-gradient-success">{{ $item->status }}
-                                                    </span>
+                                                    <span class="badge bg-gradient-success">{{ $item->status }}</span>
                                                 </td>
                                             @endif
+
                                             <td class="align-middle text-center">
                                                 <span
                                                     class="text-secondary text-xs font-weight-bold">{{ $item->created_at }}
                                                 </span>
                                             </td>
                                             <td class="align-middle">
-                                                <form action="{{ route('pengaduan.destroy', $item->id) }}" method="POST"
+                                                <form action="{{ route('destroymasyarakat', $item->id) }}" method="POST"
                                                     id="delete-form">
-                                                    <a class="btn btn-info"
-                                                        href="{{ route('showmasyarakat', $item->id) }}"><i class="fa fa-eye"
-                                                            aria-hidden="true"></i></a>
+                                                    <a class="btn btn-info" href="{{ route('showmasyarakat', $item->id) }}">
+                                                        <i class="fa fa-eye" aria-hidden="true"></i></a>
+                                                    <a class="btn btn-warning"
+                                                        href="{{ route('editmasyarakat', $item->id) }}">
+                                                        <i class="fa fa-pen" aria-hidden="true"></i></a>
+
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-youtube" id="delete-button"><i
-                                                            class="fa fa-trash" aria-hidden="true"></i></button>
+                                                    <button type="submit" class="btn btn-youtube" id="delete-button"
+                                                        onclick="showConfirmationModal()">
+                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                    </button>
                                                 </form>
                                             </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
-                            <div class="d-flex  float-end">
+                            {{-- <div class="d-flex  float-end">
                                 {{ $pengaduan->links() }}
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog"
+            aria-labelledby="confirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmationModalLabel">Konfirmasi Hapus Data</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin menghapus data ini?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                        <button type="submit" form="delete-form" class="btn btn-danger">Hapus</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <footer class="footer pt-3  ">
             <div class="container-fluid">
                 <div class="row align-items-center justify-content-lg-between">
                     <div class="col-lg-6 mb-lg-0 mb-4">
                         <div class="copyright text-center text-sm text-muted text-lg-start">
                             ©
-                            <script>
-                                document.write(new Date().getFullYear())
-                            </script>,
-                            <a href="" class="font-weight-bold" target="_blank">
-                                4Cores
+                            <a href="" class="font-weight-bold">
+                                Cores, Pengaduan Masyarakat
                             </a>
                         </div>
                     </div>
@@ -161,4 +152,6 @@
             </div>
         </footer>
     </div>
+
+
 @endsection

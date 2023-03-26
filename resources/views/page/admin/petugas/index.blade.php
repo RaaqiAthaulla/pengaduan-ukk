@@ -19,7 +19,8 @@
                 <div class="col-12">
                     <div class="card mb-4">
                         <div class="card-header pb-0">
-                            <h6>Petugas</h6>
+                            <h6 class="float-start">Petugas</h6>
+                            <a href="{{ route('petugas.create') }}" class="btn btn-primary float-end">Tambah</a>
                         </div>
                         <div class="card-body px-0 pt-0 pb-2">
                             <div class="table-responsive p-0">
@@ -29,10 +30,10 @@
                                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                 No</th>
                                             <th
-                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ">
                                                 NIK</th>
                                             <th
-                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ">
                                                 Nama</th>
                                             <th
                                                 class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
@@ -40,7 +41,9 @@
                                             <th
                                                 class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                 EMAIL</th>
-                                            <th class="text-secondary opacity-7"></th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                AKSI</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -73,6 +76,22 @@
                                                         <h6 class="mb-0 text-sm">{{ $item->email }}</h6>
                                                     </div>
                                                 </td>
+                                                <td class="align-middle d-flex justify-content-center">
+                                                    <form action="{{ route('petugas.delete', $item->id) }}" method="POST"
+                                                        id="delete-form">
+                                                        <a class="btn btn-warning"
+                                                            href="{{ route('editform', $item->id) }}"><i class="fa fa-pen"
+                                                                aria-hidden="true"></i></a>
+
+
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-youtube" id="delete-button"
+                                                            onclick="showConfirmationModal()">
+                                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -81,6 +100,20 @@
                         </div>
                     </div>
                 </div>
+                <footer class="footer pt-3  ">
+                    <div class="container-fluid">
+                        <div class="row align-items-center justify-content-lg-between">
+                            <div class="col-lg-6 mb-lg-0 mb-4">
+                                <div class="copyright text-center text-sm text-muted text-lg-start">
+                                    ©
+                                    <a href="" class="font-weight-bold">
+                                        Cores , Pengaduan Masyarakat
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
             </div>
         </div>
     </main>

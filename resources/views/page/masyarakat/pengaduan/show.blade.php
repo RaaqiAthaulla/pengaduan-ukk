@@ -102,11 +102,12 @@
                     <h6 class="mb-0">Tanggapan</h6>
                     <div class="row">
                         <div class="col-lg-6 h-100">
-                            <div class="card-body t-4 p-3">
-                                <img width="100%" height="100%" src="{{ asset('foto-pengaduan/' . $pengaduan->foto) }}"
-                                    alt="user1">
-                                <h1>{{ $pengaduan->tanggapan->tanggapan }}</h1>
-                            </div>
+                            {{-- <div class="card-body t-4 p-3">
+                                @if ($tanggapan)
+                                    {{ $tanggapan->tanggapan }}
+                                @endif
+
+                            </div> --}}
                         </div>
                     </div>
                 </div>

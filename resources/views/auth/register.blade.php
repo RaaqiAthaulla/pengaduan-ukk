@@ -24,7 +24,7 @@
 <body class="">
     <main class="main-content  mt-0">
         <div class="page-header align-items-start min-vh-50 pt-5 pb-11 m-3 border-radius-lg"
-            style="background-image: url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signup-cover.jpg'); background-position: top;">
+            style="background-image: url('../assets/img/register.jpg'); background-position: bottom;">
             <span class="mask bg-gradient-dark opacity-6"></span>
             <div class="container">
                 <div class="row justify-content-center">
@@ -113,7 +113,7 @@
                                 {{ __('Register') }}
                             </button>
                         </div>
-                        <p class="text-sm mt-3 mb-0">Already have an account? <a href="javascript:;"
+                        <p class="text-sm mt-3 mb-0">Already have an account? <a href="{{ route('login') }}"
                                 class="text-dark font-weight-bolder">Sign in</a></p>
                         </form>
                     </div>

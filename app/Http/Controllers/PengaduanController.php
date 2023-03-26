@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Dompdf\Dompdf;
 use App\Models\User;
 use App\Models\Pengaduan;
+use App\Models\tanggapan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Dompdf\Dompdf;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Storage;
 
 class PengaduanController extends Controller
 {
@@ -97,9 +100,8 @@ class PengaduanController extends Controller
     public function showmasyarakat(Pengaduan $pengaduan)
     {
 
-        // $pengaduan = ::where('id_pengaduan', $id)->first();
-        // dd($pengaduan);
-        return view('page.masyarakat.pengaduan.show', compact('pengaduan'));
+        $tanggapan = $pengaduan->tanggapan;
+        return view('page.masyarakat.pengaduan.show', compact('pengaduan', 'tanggapan'));
     }
 
     /**
@@ -108,11 +110,6 @@ class PengaduanController extends Controller
      * @param  \App\Models\Pengaduan  $pengaduan
      * @return \Illuminate\Http\Response
      */
-    public function edit(Pengaduan $pengaduan)
-    {
-        return view('page.admin.pengaduan.edit', compact('pengaduan'));
-    }
-
     /**
      * Update the specified resource in storage.
      *
@@ -120,36 +117,39 @@ class PengaduanController extends Controller
      * @param  \App\Models\Pengaduan  $pengaduan
      * @return \Illuminate\Http\Response
      */
+
+
+    public function edit(Pengaduan $pengaduan)
+    {
+        if ($pengaduan->status != 'belum diproses') {
+            return redirect()->back()->with('error', 'Maaf, Anda tidak diizinkan untuk mengedit pengaduan ini karena status pengaduan sudah diubah.');
+        }
+        return view('page.masyarakat.pengaduan.update', compact('pengaduan'));
+    }
+
     public function update(Request $request, Pengaduan $pengaduan)
     {
         $request->validate([
+            'judul' => 'required',
             'isi_laporan' => 'required',
-            'foto' => 'required',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg',
         ]);
 
         $input = $request->all();
 
-        if ($image = $request->file('foto')) {
+        if ($request->hasFile('foto')) {
+            $image = $request->file('foto');
             $destinationPath = 'foto-pengaduan/';
             $profileImage = date('YmdHis') . "." . $image->getClientOriginalExtension();
             $image->move($destinationPath, $profileImage);
             $input['foto'] = "$profileImage";
-            if ($pengaduan->foto) {
-                unlink('foto-pengaduan/' . $pengaduan->foto); // menghapus file gambar lama
-            }
-        } else {
-            unset($input['foto']);
-            if ($pengaduan->foto) {
-                unlink('foto-pengaduan/' . $pengaduan->foto); // menghapus file gambar lama
-            }
         }
-
 
         $pengaduan->update($input);
 
-        return redirect()->route('pengaduan.index')
-            ->with('success', 'Pengaduan berhasil diupdate.');
+        return redirect()->route('pengaduanmasyarakat')->with('success', 'Pengaduan berhasil diupdate.');
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -159,14 +159,55 @@ class PengaduanController extends Controller
      */
     public function destroy(Pengaduan $pengaduan)
     {
+        if ($pengaduan->tanggapan) {
+            $pengaduan->tanggapan()->delete(); // menghapus data tanggapan terkait
+        }
         if ($pengaduan->foto) {
             unlink('foto-pengaduan/' . $pengaduan->foto); // menghapus file gambar
         }
-        $pengaduan->delete(); // menghapus data dari database
+        $pengaduan->delete(); // menghapus data pengaduan dari database
 
         return redirect()->route('pengaduan.index')
             ->with('success', 'Pengaduan berhasil dihapus.');
     }
+
+    public function destroymasyarakat(Pengaduan $pengaduan)
+    {
+        if ($pengaduan->status == 'Selesai') {
+            if ($pengaduan->foto) {
+                unlink('foto-pengaduan/' . $pengaduan->foto); // menghapus file gambar
+            }
+            if ($pengaduan->tanggapan) {
+                $pengaduan->tanggapan()->delete(); // menghapus data tanggapan terkait
+            }
+            $pengaduan->delete(); // menghapus data pengaduan dari database
+            return redirect()->route('pengaduanmasyarakat')
+                ->with('success', 'Pengaduan berhasil dihapus.');
+        } elseif ($pengaduan->status == 'Belum Di Proses' || $pengaduan->status == 'Sedang Di Proses') {
+            return redirect()->route('pengaduanmasyarakat')
+                ->with('error', 'Pengaduan tidak dapat dihapus karena status masih ' . $pengaduan->status);
+        } else {
+            return redirect()->route('pengaduanmasyarakat')
+                ->with('error', 'Pengaduan tidak dapat dihapus karena status tidak valid.');
+        }
+    }
+
+
+
+
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $pengaduan = Pengaduan::where('judul', 'like', '%' . $request->search . '%')
+            ->orWhere('isi_laporan', 'like', '%' . $request->search . '%')
+            ->get();
+
+
+        return view('page.admin.pengaduan.index', compact('pengaduan'));
+    }
+
+
 
     public function ubahStatus(Request $request, Pengaduan $pengaduan)
     {

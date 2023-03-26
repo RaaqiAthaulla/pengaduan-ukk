@@ -28,7 +28,7 @@ class HomeController extends Controller
 
     public function user()
     {
-        return view('layouts.masyarakat');
+        return view('page.masyarakat.dashboard');
     }
 
     public function dashboard()

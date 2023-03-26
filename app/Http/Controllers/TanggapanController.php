@@ -21,7 +21,7 @@ class TanggapanController extends Controller
     public function index()
     {
         $tanggapan = Tanggapan::all();
-        return view('tanggapan.index', compact('tanggapan'));
+        return view('page.admin.tanggapan.add', compact('tanggapan'));
     }
 
     /**

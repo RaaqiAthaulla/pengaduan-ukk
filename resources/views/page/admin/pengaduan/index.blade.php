@@ -17,35 +17,17 @@
             <div class="col-12">
                 {{-- <a href="{{ route('pengaduan.create') }}" class="btn btn-primary me-2">Tambah</a> --}}
                 <div class="card mb-4">
-                    <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0">Data Pengaduan</h6>
-                        <div class="d-flex justify-content-center ">
-                            {{-- <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
-                                        data-bs-target="#home-tab-pane" type="button" role="tab"
-                                        aria-controls="home-tab-pane" aria-selected="true">Home</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
-                                        data-bs-target="#profile-tab-pane" type="button" role="tab"
-                                        aria-controls="profile-tab-pane" aria-selected="false">Profile</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="contact-tab" data-bs-toggle="tab"
-                                        data-bs-target="#contact-tab-pane" type="button" role="tab"
-                                        aria-controls="contact-tab-pane" aria-selected="false">Contact</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
-                                        data-bs-target="#disabled-tab-pane" type="button" role="tab"
-                                        aria-controls="disabled-tab-pane" aria-selected="false" disabled>Disabled</button>
-                                </li>
-                            </ul> --}}
-
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="float-start">Pengaduan</h6>
+                        <div class="input-group float-end justify-content-end">
+                            <form action="{{ route('search') }}" method="GET" class="d-flex">
+                                <input type="search" name="search" class="form-control" placeholder="Type here..."
+                                    value="{{ request()->input('search') }}">
+                            </form>
                         </div>
                     </div>
 
+                    {{-- @if (count($pengaduan) > 0) --}}
                     <div class="card-body px-0 pt-0 pb-2">
                         <div class="table-responsive p-0">
                             <table class="table align-items-center mb-0">
@@ -75,7 +57,9 @@
                                 <tbody>
                                     @php $no = 1; @endphp
                                     @foreach ($pengaduan as $item)
-                                        {{-- @dd($item) --}}
+                                        {{-- @if (isset($_GET['search']) && strpos(strtolower($item->user->nama), strtolower($_GET['search'])) === false)
+                                                @continue
+                                            @endif --}}
                                         <tr>
                                             <td class="px-4 py-1 ">
                                                 <h6>{{ $no++ }}.</h6>
@@ -90,7 +74,8 @@
                                                 <div class="d-flex px-2 py-1">
                                                     <div class="d-flex flex-column justify-content-center">
                                                         <h6 class="mb-0 text-sm">{{ $item->user->nama }}</h6>
-                                                        <p class="text-xs text-secondary mb-0">{{ $item->user->nik }}</p>
+                                                        <p class="text-xs text-secondary mb-0">{{ $item->user->nik }}
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </td>
@@ -102,51 +87,49 @@
                                                     <form action="pengaduan/status/{{ $item->id }}" method="POST"
                                                         class="d-inline">
                                                         <button type="submit"
-                                                            class="btn badge badge-sm bg-gradient-warning d-block">
-                                                            {{ $item->status }}
-                                                        </button>
+                                                            class="btn badge badge-sm bg-gradient-danger ">{{ $item->status }}</button>
                                                         @csrf
                                                     </form>
                                                 </td>
                                             @elseif ($item->status == 'Sedang Di Proses')
                                                 <td class="lign-middle text-center text-sm">
-                                                    <span class="badge badge-sm bg-gradient-success">
-                                                        {{ $item->status }}
-                                                    </span>
+                                                    <span
+                                                        class="badge badge-sm bg-gradient-warning">{{ $item->status }}</span>
                                                 </td>
                                             @else
                                                 <td class="text-center">
-                                                    <span class="btn badge bg-gradient-success">{{ $item->status }}
-                                                    </span>
+                                                    <span class="btn badge bg-gradient-success">{{ $item->status }}</span>
                                                 </td>
                                             @endif
                                             <td class="align-middle text-center">
                                                 <span
-                                                    class="text-secondary text-xs font-weight-bold">{{ $item->created_at }}
-                                                </span>
+                                                    class="text-secondary text-xs font-weight-bold">{{ $item->created_at }}</span>
                                             </td>
-                                            {{-- {{ dd($item->id, route('pengaduan.show', $item->id)) }} --}}
                                             <td class="align-middle">
                                                 <form action="{{ route('pengaduan.destroy', $item->id) }}" method="POST"
                                                     id="delete-form">
                                                     <a class="btn btn-info"
-                                                        href="{{ route('pengaduan.show', $item->id) }}"><i
-                                                            class="fa fa-eye" aria-hidden="true"></i></a>
+                                                        href="{{ route('pengaduan.show', $item->id) }}">
+                                                        <i class="fa fa-eye" aria-hidden="true"></i>
+                                                    </a>
+
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-youtube" id="delete-button"><i
-                                                            class="fa fa-trash" aria-hidden="true"></i></button>
+                                                    <button type="submit" class="btn btn-youtube" id="delete-button">
+                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                    </button>
                                                 </form>
                                             </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
-                            <div class="d-flex  float-end">
+                            {{-- <div class="d-flex  float-end">
                                 {{ $pengaduan->links() }}
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
+                    {{-- @endif --}}
                 </div>
             </div>
         </div>
@@ -156,11 +139,8 @@
                     <div class="col-lg-6 mb-lg-0 mb-4">
                         <div class="copyright text-center text-sm text-muted text-lg-start">
                             ©
-                            <script>
-                                document.write(new Date().getFullYear())
-                            </script>,
-                            <a href="" class="font-weight-bold" target="_blank">
-                                4Cores
+                            <a href="" class="font-weight-bold">
+                                Cores , Pengaduan Masyarakat
                             </a>
                         </div>
                     </div>
