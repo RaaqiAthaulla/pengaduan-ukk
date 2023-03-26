@@ -23,5 +23,13 @@ class AdminMiddleware
         }
 
         return redirect('/');
+
+        // $userRole = auth()->user()->role;
+
+        // if ($userRole == 'Admin' || $userRole == 'Petugas') {
+        //     return $next($request);
+        // }
+
+        // return redirect('/');
     }
 }

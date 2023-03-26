@@ -101,6 +101,7 @@
                         <span class="nav-link-text ms-1">Laporan</span>
                     </a>
                 </li>
+                {{-- @endif --}}
             </ul>
         </div>
     </aside>
